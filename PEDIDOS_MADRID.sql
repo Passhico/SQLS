@@ -1,15 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- * Author:  Pascual Muñoz 
- * Created: 21-oct-2016
- */
-
 select 
-	a.liquidado, 
 	cd.pedido,
  if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) as fecha_creacion_pedido,
  fp.fecha_entrega_prevista  , 
@@ -23,10 +12,12 @@ from
 where 
 	if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) > '2016-11-20'
 	and cd.eliminado <> 's' 
-	and cd.enviado <> 'no'
-	and  a.id_almacen <> 28
+	and cd.enviado = 'no'
+	and  a.id_almacen = 28
 	and fp.fecha_entrega_prevista <= date(now())
+	
 group by 
-	cd.pedido
+	cd.pedido	
 order by 
 	fecha_creacion_pedido asc
+
