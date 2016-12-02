@@ -23,7 +23,7 @@
 set @fecha_desde = '2016-12-01' ;	 /*Introduce aquí la fecha */
 set @fecha_hasta = '2016-12-02' ;
 
-set @mail = 'maria@goldenrace.com'; 					 /*Mail para que saque los trackids si hace falta */
+set @mail = 'mvalffer@gmail.com'; 					 /*Mail para que saque los trackids si hace falta */
 set @repeticiones = 3; 			 /*Numero de tickets repetidos*/
 
 
