@@ -50,7 +50,5 @@ where pedido_notificado = false
 group by retrasos.pedido 
 having n_articulos_agotados > 0
 
-
-
 	
 
