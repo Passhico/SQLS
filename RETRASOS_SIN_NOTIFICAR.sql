@@ -1,4 +1,4 @@
-set @dia_pedido = '2016-12-08';
+set @dia_pedido = '2016-12-12';
 
 select 
 		@dia_pedido, 
@@ -9,7 +9,7 @@ select
 			left join web.articulos a on a.id_familia = f.id_familia
 			where a.id_articulo = retrasos.id_producto
 		) as responsable , 
-	retrasos.pedido ,
+	concat('http://admin.pccomponentes.com/quovadis/admin_pedido.php?id_pedido=', retrasos.pedido) as pedido, 
    sum(agotado) as n_articulos_agotados, 
    retrasos.*
   
@@ -22,7 +22,7 @@ from
 		 stock_madrid.ASTOCK as stock_madrid,
 		 stock_murcia.ASTOCK + stock_madrid.ASTOCK as  stock_total, 
 		 if ( stock_murcia.ASTOCK + stock_madrid.ASTOCK <= 0 and  stock_murcia.ASTOCK + stock_madrid.ASTOCK is not null, true , false ) as agotado , 
-			cd.pedido,
+		 	cd.pedido,
 		 if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) as fecha_creacion_pedido,
 		 if ( locate('-', cd.enviado) = '3', STR_TO_DATE(cd.enviado,'%d-%m-%Y'), STR_TO_DATE(cd.enviado,'%Y-%m-%d')) as enviado , 
 		 fp.*
@@ -35,14 +35,14 @@ from
 		   left join xgestevo.fcstk001 stock_madrid on ca.id_producto = stock_madrid.ACODAR and stock_madrid.AALM in (28)
 		where 
 			if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) between @dia_pedido and @dia_pedido
-			and ca.id_producto  > 11000 and ca.id_producto not in (20000, 31046, 'TEXTO')
+			and ca.id_producto  > 11000 and ca.id_producto not in (20000/*descuento*/, 31046/*montaje*/, 31045, 'TEXTO', 'MON8672'  )
 			and cd.eliminado <> 's' 
 			and cd.enviado = 'no'
 			and fp.fecha_entrega_prevista <= current_date
 			and cd.envio = 'urgente'
 			and cd.transporte_seleccionado not in ('RedyserSameDay')
 			and cd.pagado <> 'no'
-		group by ca.id_compras_articulo having min(fp.fecha_actualizacion)
+		group by ca.id_compras_articulo having max(fp.fecha_actualizacion)
 		order by 
 			stock_total asc , fecha_creacion_pedido asc, cd.pedido  asc
 		) as retrasos
