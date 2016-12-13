@@ -1,4 +1,4 @@
-set @dia_pedido = '2016-11-24';
+set @dia_pedido = '2016-12-13';
 
 select 
 		@dia_pedido, 
@@ -35,7 +35,7 @@ from
 		   left join xgestevo.fcstk001 stock_madrid on ca.id_producto = stock_madrid.ACODAR and stock_madrid.AALM in (28)
 		where 
 			if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) between @dia_pedido and @dia_pedido
-			and ca.id_producto  > 11000 and ca.id_producto not in (20000/*descuento*/, 31046/*montaje*/, 31045, 'TEXTO', 'MON8672'  )
+			and ca.id_producto  > 11000 and ca.id_producto not in (20000/*descuento*/, 31046/*montaje*/, 31045, 'TEXTO', 'MON8672' , 74623 /*TARJETAREGALO*/)
 			and cd.eliminado <> 's' 
 			and cd.enviado = 'no'
 			and fp.fecha_entrega_prevista <= current_date
@@ -49,6 +49,3 @@ from
 where pedido_notificado = false
 group by retrasos.pedido 
 having n_articulos_agotados > 0
-
-	
-
