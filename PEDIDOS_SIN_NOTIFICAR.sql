@@ -1,0 +1,50 @@
+set @dia_pedido = '2016-11-26';
+
+select 
+		(	select cr.email
+			from  web.familias_responsables fr
+			left join web.compras_responsables cr  on cr.id_compras_responsables = fr.id_compras_responsables
+			left join web.familias f on f.id_familia= fr.id_familia
+			left join web.articulos a on a.id_familia = f.id_familia
+			where a.id_articulo = retrasos.id_producto
+		) as responsable , 
+	retrasos.pedido ,
+   sum(agotado) as n_articulos_agotados, 
+   retrasos.*
+  
+from	
+		(select 
+		if ( (select id_compras_datos from web.compras_incidencias i where i.id_compras_datos = cd.id_compras_datos group by i.id_compras_datos) is null, false, true) as pedido_notificado, 
+		 ca.id_producto , 
+		 ca.nombre, 
+		 stock_murcia.ASTOCK as stock_murcia, 
+		 stock_madrid.ASTOCK as stock_madrid,
+		 stock_murcia.ASTOCK + stock_madrid.ASTOCK as  stock_total, 
+		 if ( stock_murcia.ASTOCK + stock_madrid.ASTOCK <= 0 and  stock_murcia.ASTOCK + stock_madrid.ASTOCK is not null, true , false ) as agotado , 
+			cd.pedido,
+		 if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) as fecha_creacion_pedido,
+		 if ( locate('-', cd.enviado) = '3', STR_TO_DATE(cd.enviado,'%d-%m-%Y'), STR_TO_DATE(cd.enviado,'%Y-%m-%d')) as enviado , 
+		 fp.*
+		 
+		from 
+			web.compras_datos cd 
+			left join web.compras_articulos ca on ca.id_compras_datos = cd.id_compras_datos 
+			left join web.fechas_pedidos fp on fp.id_compras_datos = cd.id_compras_datos 
+		   left join xgestevo.fcstk001 stock_murcia on ca.id_producto = stock_murcia.ACODAR and stock_murcia.AALM in (1)
+		   left join xgestevo.fcstk001 stock_madrid on ca.id_producto = stock_madrid.ACODAR and stock_madrid.AALM in (28)
+		where 
+			if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) between @dia_pedido and @dia_pedido
+			and ca.id_producto  > 11000 and ca.id_producto not in (20000, 31046)
+			and cd.eliminado <> 's' 
+			and cd.enviado = 'no'
+			and fp.fecha_entrega_prevista <= current_date
+			and cd.envio = 'urgente'
+			and cd.transporte_seleccionado not in ('RedyserSameDay')
+			and cd.pagado <> 'no'
+		group by ca.id_compras_articulo having min(fp.fecha_actualizacion)
+		order by 
+			stock_total asc , fecha_creacion_pedido asc, cd.pedido  asc
+		) as retrasos
+where pedido_notificado = false
+group by retrasos.pedido 
+having n_articulos_agotados > 0
