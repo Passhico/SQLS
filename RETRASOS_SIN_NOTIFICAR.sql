@@ -1,4 +1,4 @@
-set @dia_pedido = '2016-12-12';
+set @dia_pedido = '2016-11-24';
 
 select 
 		@dia_pedido, 
@@ -40,11 +40,11 @@ from
 			and cd.enviado = 'no'
 			and fp.fecha_entrega_prevista <= current_date
 			and cd.envio = 'urgente'
-			and cd.transporte_seleccionado not in ('RedyserSameDay')
+			and cd.transporte_seleccionado not in ('RedyserSameDay' , 'RedyserCanarias')
 			and cd.pagado <> 'no'
-		group by ca.id_compras_articulo having max(fp.fecha_actualizacion)
+		group by ca.id_compras_articulo having min(fp.fecha_actualizacion)
 		order by 
-			stock_total asc , fecha_creacion_pedido asc, cd.pedido  asc
+			stock_total desc , fecha_creacion_pedido asc, cd.pedido  asc
 		) as retrasos
 where pedido_notificado = false
 group by retrasos.pedido 
