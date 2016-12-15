@@ -1,4 +1,4 @@
-set @dia_pedido = '2016-12-13';
+set @dia_pedido = '2016-11-19';
 
 select 
 		@dia_pedido, 
@@ -29,7 +29,7 @@ from
 		 
 		from 
 			web.compras_datos cd 
-			left join web.compras_articulos ca on ca.id_compras_datos = cd.id_compras_datos 
+			inner join web.compras_articulos ca on ca.id_compras_datos = cd.id_compras_datos 
 			left join web.fechas_pedidos fp on fp.id_compras_datos = cd.id_compras_datos 
 		   left join xgestevo.fcstk001 stock_murcia on ca.id_producto = stock_murcia.ACODAR and stock_murcia.AALM in (1)
 		   left join xgestevo.fcstk001 stock_madrid on ca.id_producto = stock_madrid.ACODAR and stock_madrid.AALM in (28)
@@ -42,10 +42,11 @@ from
 			and cd.envio = 'urgente'
 			and cd.transporte_seleccionado not in ('RedyserSameDay' , 'RedyserCanarias')
 			and cd.pagado <> 'no'
-		group by ca.id_compras_articulo having min(fp.fecha_actualizacion)
+		group by ca.id_compras_articulo having max(fp.fecha_entrega_prevista)
 		order by 
 			stock_total desc , fecha_creacion_pedido asc, cd.pedido  asc
 		) as retrasos
 where pedido_notificado = false
 group by retrasos.pedido 
-having n_articulos_agotados > 0
+order by n_articulos_agotados
+/*having n_articulos_agotados > 0 (para sacar solo de compras)*/
