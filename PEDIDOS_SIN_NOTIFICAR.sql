@@ -1,4 +1,5 @@
-set @dia_pedido = '2017-01-04';
+set @dia_desde = '2017-01-04';
+set @dia_hasta = '2017-01-04';
 
 select 
 		@dia_pedido, 
@@ -34,7 +35,7 @@ from
 		   left join xgestevo.fcstk001 stock_murcia on ca.id_producto = stock_murcia.ACODAR and stock_murcia.AALM in (1)
 		   left join xgestevo.fcstk001 stock_madrid on ca.id_producto = stock_madrid.ACODAR and stock_madrid.AALM in (28)
 		where 
-			if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) between @dia_pedido and @dia_pedido
+			if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) between @dia_desde and @dia_hasta
 			and ca.id_producto  > 11000 and ca.id_producto not in (20000/*descuento*/, 31046/*montaje*/, 31045, 'TEXTO', 'MON8672' , 74623 /*TARJETAREGALO*/)
 			and cd.eliminado <> 's' 
 			and cd.enviado = 'no'
