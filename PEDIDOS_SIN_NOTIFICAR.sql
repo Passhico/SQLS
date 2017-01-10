@@ -2,7 +2,7 @@ set @dia_desde = '2017-01-04';
 set @dia_hasta = '2017-01-04';
 
 select 
-		@dia_pedido, 
+		fecha_pedido, 
 		(	select cr.email
 			from  web.familias_responsables fr
 			left join web.compras_responsables cr  on cr.id_compras_responsables = fr.id_compras_responsables
@@ -15,7 +15,7 @@ select
    retrasos.*
   
 from	
-		(select 
+		(select
 		if ( (select id_compras_datos from web.compras_incidencias i where i.id_compras_datos = cd.id_compras_datos group by i.id_compras_datos) is null, false, true) as pedido_notificado, 
 		 ca.id_producto , 
 		 ca.nombre, 
@@ -26,8 +26,8 @@ from
 		 	cd.pedido,
 		 if ( locate('-', cd.fecha) = '3', STR_TO_DATE(cd.fecha,'%d-%m-%Y'), STR_TO_DATE(cd.fecha,'%Y-%m-%d')) as fecha_creacion_pedido,
 		 if ( locate('-', cd.enviado) = '3', STR_TO_DATE(cd.enviado,'%d-%m-%Y'), STR_TO_DATE(cd.enviado,'%Y-%m-%d')) as enviado , 
-		 fp.*
-		 
+		 fp.*, 
+		 cd.fecha as fecha_pedido
 		from 
 			web.compras_datos cd 
 			inner join web.compras_articulos ca on ca.id_compras_datos = cd.id_compras_datos 
