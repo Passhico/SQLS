@@ -41,7 +41,7 @@ from
 			and fp.fecha_entrega_prevista <= adddate(current_date, 0)
 			and cd.envio = 'urgente'
 			and cd.transporte_seleccionado not in ('RedyserSameDay' , 'RedyserCanarias')
-			and cd.pagado <> 'no'
+			and cd.pagado <> 'no' and cd.pagado <> current_date
 			and cd.fechaexpedir = '0000-00-00' /*para quitar los programados*/
 		group by ca.id_compras_articulo having max(fp.fecha_entrega_prevista)
 		order by 
