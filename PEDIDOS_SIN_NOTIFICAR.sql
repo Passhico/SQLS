@@ -1,5 +1,17 @@
-set @dia_desde = '2017-01-04';
-set @dia_hasta = '2017-01-04';
+/*       ,--. ,--.
+      / @) Y @) \
+     (           )                
+      \ `-----' /                
+ __.  /~~~~~~~~~\  ,__         
+(   \(           )/   )       
+ \   V           V   /       
+  \   \\  \ /  //   /        
+  /   /_\  V  /_\   \         
+  UUUU   UUUUU   UUUU   
+*/
+
+set @dia_desde = '2017-01-01';
+set @dia_hasta = '2017-01-24';
 
 select 
 		fecha_pedido, 
@@ -52,3 +64,5 @@ where pedido_notificado = false
 group by retrasos.pedido 
 order by n_articulos_agotados
 /*having n_articulos_agotados > 0 (para sacar solo de compras)*/
+
+
