@@ -8,13 +8,3 @@ and a.id_articulo not in (2, 10003, 10004, 10005, 10006, 11000, 19000, 20000, 21
 			55996, 55998, 63258, 65450, 63315, 63313, 59051) 
 ORDER BY a.id_articulo desc ;
 
-
-
-select min(a.id_articulo) , max(a.id_articulo)
-from articulos a 	
-where a.activo = 's'
-order by a.id_articulo
-;
-select (@cnt = @cnt+1),  a.id_articulo
-from articulos a 
-order by a.id_articulo; 
